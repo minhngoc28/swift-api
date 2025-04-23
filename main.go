@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,7 @@ import (
 )
 
 func main() {
-	dsn := "postgres://postgres:mysecretpassword@swift-db:5432/swift?sslmode=disable"
+	dsn := os.Getenv("DB_URL")
 	if dsn == "" {
 		log.Fatal("Environment variable DB_URL is missing")
 	}
@@ -21,41 +22,37 @@ func main() {
 	var db *sql.DB
 	var err error
 
-	// Retry connection
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 20; i++ {
 		db, err = sql.Open("postgres", dsn)
 		if err != nil {
 			log.Printf("Failed to open DB: %v", err)
 		} else {
 			err = db.Ping()
 			if err == nil {
-				log.Println("✅ Connected to DB")
+				log.Println("Connected to DB")
 				break
 			}
 			log.Printf("Failed to ping DB: %v", err)
 		}
-
-		log.Printf("⏳ Waiting for DB to be ready... attempt %d/10", i+1)
+		log.Printf("Waiting for DB to be ready... attempt %d/20", i+1)
 		time.Sleep(2 * time.Second)
 	}
-
 	if err != nil {
 		log.Fatalf("Cannot connect to DB: %v", err)
 	}
+	defer db.Close()
 
 	dbx := sqlx.NewDb(db, "postgres")
 
-	// Insert CSV data
 	if err := utils.ParseAndInsertCSV(dbx, "swift.csv"); err != nil {
 		log.Fatalf("Failed to import CSV: %v", err)
 	}
 
-	// Start API server
 	r := gin.Default()
 	r.GET("/swift-codes", handlers.GetAllSwiftCodesHandler(dbx))
 	r.GET("/swift-codes/:code", handlers.GetSwiftCodeHandler(dbx))
 
-	log.Println("🚀 Server is running at http://localhost:8080")
+	log.Println("Server is running at http://localhost:8080")
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}

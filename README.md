@@ -157,6 +157,7 @@ curl -X DELETE http://localhost:8080/swift-codes/TESTPLPWXXX
 
 ### 1. Ensure Docker container is running and DB `swift` is ready:
 ```bash
+cd swift-api  # or the path where you cloned the repo
 docker-compose up -d
 ```
 
@@ -179,7 +180,7 @@ go test ./handlers
 
 ---
 
-## Clean Up (Optional)
+## Clean Up (optional)
 ```bash
 docker-compose down -v
 ```

@@ -1,6 +1,6 @@
-# Remitly 2025 - Home Exercise
+# Remitly 2025 - Home exercise
 
-This project is a solution to the Remitly Internship 2025 Home Exercise.
+This project is a solution to the Remitly Internship 2025 Home exercise.
 
 The goal of the exercise is to:
 - Parse SWIFT code data from a CSV file
@@ -12,16 +12,16 @@ All services run inside Docker containers using Docker Compose.
 
 ---
 
-## Tech Stack
+## Tech stack
 
-- Go (Golang)
+- Go
 - PostgreSQL
 - Docker & Docker Compose
 - Go standard `net/http` + `testing` packages
 
 ---
 
-## Project Structure
+## Project structure
 
 - `main.go` – App entry point, router setup
 - `Dockerfile` – Go build instructions
@@ -36,14 +36,14 @@ All services run inside Docker containers using Docker Compose.
 
 ---
 
-## How to Run
+## How to run
 
 ### Prerequisites
 
 - Docker
 - Docker Compose
 
-### Quick Start
+### Quick start
 
 ```bash
 git clone https://github.com/minhngoc28/swift-api.git
@@ -51,12 +51,13 @@ cd swift-api
 docker-compose up --build
 ```
 This command will:
-- Build the Go backend service
+- Build the Go API container
 - Start a PostgreSQL database (with volume persistence)
-- Parse and insert swift.csv data into the database (only on first run)
-- Start a web server on http://localhost:8080
+- Automatically create the swift database and schema (via init.sql)
+- Parse and load swift.csv into DB
+- Run the API on http://localhost:8080
 
-## API Endpoints
+## API endpoints
 Base URL: `http://localhost:8080`
 
 ---
@@ -112,7 +113,7 @@ Delete a SWIFT code
 curl -X DELETE http://localhost:8080/swift-codes/TESTPLPWXXX
 ```
 
-## Notes & Assumptions
+## Notes
 
 - `swift.csv` is parsed and inserted only on the first run (or when DB volume is reset).
 - `swift_code` is used as the primary key and assumed to be globally unique.
@@ -153,7 +154,7 @@ curl -X POST http://localhost:8080/swift-codes \
 curl -X DELETE http://localhost:8080/swift-codes/TESTPLPWXXX
 ```
 
-## Running Unit Tests
+## Running unit tests
 
 ### 1. Ensure Docker container is running and DB `swift` is ready:
 ```bash
@@ -180,7 +181,7 @@ go test ./handlers
 
 ---
 
-## Clean Up (optional)
+## Clean up (optional)
 ```bash
 docker-compose down -v
 ```

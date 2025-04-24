@@ -22,7 +22,6 @@ func GetSwiftCodeHandler(db *sqlx.DB) gin.HandlerFunc {
 			return
 		}
 
-		// If it's a headquarter, also return a list of its branches
 		if swift.IsHeadquarter {
 			var branches []models.SwiftCode
 			err = db.Select(&branches, `
@@ -104,7 +103,6 @@ func CreateSwiftCodeHandler(db *sqlx.DB) gin.HandlerFunc {
 			return
 		}
 
-		// ✅ Fix: Trả về đúng key theo JSON field
 		c.JSON(http.StatusCreated, gin.H{
 			"message":   "SWIFT code created successfully",
 			"swiftCode": input.SwiftCode,

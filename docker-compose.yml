@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+  swift-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: swift
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount tệp SQL vào thư mục init của PostgreSQL
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  swift-api:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      swift-db:
+        condition: service_healthy
+    environment:
+      - DB_URL=postgres://postgres:mysecretpassword@swift-db:5432/swift?sslmode=disable
+
+volumes:
+  pgdata:
+    driver: local
